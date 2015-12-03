@@ -92,29 +92,55 @@ class RankingUtility
   def get_three_of_a_kind
   end
 
-  def get_two_pair
+  def get_two_pair(cards)
+    first_pair = []
+    second_pair = []
+    cards = order_cards_by_face(cards)
+    
+    if get_pair(cards) == nil
+      return nil
+    end
+    returned_get_pair, delete, first_pair_high_card, delete = get_pair(cards)
+    first_pair = returned_get_pair[0..1]
+    cards = (remove_cards_from_collection(first_pair, cards))
+
+    if get_pair(cards) == nil
+      return nil
+    end
+    returned_get_pair, delete, second_pair_high_card, delete = get_pair(cards)
+    second_pair = returned_get_pair[0..1]
+    cards = (remove_cards_from_collection(second_pair, cards))
+
+    delete , delete, high_card = get_high_card(cards)
+    cards = get_merged_cards(first_pair, second_pair)
+    cards.push(high_card)
+    return cards, HAND_NAMES['TWO_PAIR'], first_pair_high_card, second_pair_high_card, high_card
+    
   end
 
   def get_pair(cards)
     cards = order_cards_by_face(cards)
     pair = []
     index = 0
-    finished = false
-    while (index < cards.count - 1) && finished != true 
-      if cards.at(index).face_value == cards.at(index+1)
+    found = false
+    while (index < cards.count - 1) && found != true 
+      # print cards.at(index). == cards.at(index+1)
+      if cards.at(index).face_value == cards.at(index+1).face_value
         pair.push(cards.at(index))
         pair.push(cards.at(index+1))
-        finished = true
+        found = true
       end
       index += 1
     end
+    if found == false
+      return nil
+    end
     cards = remove_cards_from_collection(pair, cards)
     cards = cards[0..2]
-    high_card, delete, delete = get_high_card(cards) # FIX handle tuples correctly
-    pair_high_card, delete, delete = get_high_card(pair)
+    delete, delete, high_card = get_high_card(cards) # FIX handle tuples correctly
+    pair_high_card = pair.at(0)
     cards = get_merged_cards(pair, cards)
     return cards, HAND_NAMES['ONE_PAIR'], pair_high_card, high_card # cards, hand's value, high card of the pair, high card outside the pair 
-
   end
 
   def get_high_card(cards)
@@ -123,7 +149,7 @@ class RankingUtility
     return cards, HAND_NAMES['HIGH_CARD'], high_card
   end
 
-########################## Utilities #####################################
+########################## Helpers #####################################
 
   def remove_cards_from_collection(cards_to_remove, cards)
     cards_to_remove.each do |card|
@@ -137,6 +163,7 @@ class RankingUtility
       if card == card_to_remove
         cards.delete(card)
       end
+    end
     cards
   end
 
@@ -319,6 +346,37 @@ cards = []
 # cards.push(Card.new("8h"))
 # rankingUtility.print_cards(cards)
 # print (rankingUtility.get_four_of_a_kind(cards))
+# puts ''
+
+######################### Get Two Pair ############################# checked
+
+cards.clear
+cards.push(Card.new("2d"))
+cards.push(Card.new("Kh"))
+cards.push(Card.new("Qh"))
+cards.push(Card.new("Jh"))
+cards.push(Card.new("8c"))
+cards.push(Card.new("2h"))
+cards.push(Card.new("8h"))
+rankingUtility.print_cards(cards)
+print (rankingUtility.get_two_pair(cards))
+cards, delete, delete, delete, delete = rankingUtility.get_two_pair(cards)
+puts ''
+rankingUtility.print_cards(cards)
+puts ''
+
+######################### Get Pair ############################# checked
+
+# cards.clear
+# cards.push(Card.new("2d"))
+# cards.push(Card.new("Kh"))
+# cards.push(Card.new("Qh"))
+# cards.push(Card.new("Jh"))
+# cards.push(Card.new("0h"))
+# cards.push(Card.new("2h"))
+# cards.push(Card.new("8h"))
+# rankingUtility.print_cards(cards)
+# print (rankingUtility.get_pair(cards))
 # puts ''
 
 ######################### Get High Card ############################# checked
