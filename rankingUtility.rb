@@ -16,6 +16,8 @@ class RankingUtility
     'HIGH_CARD'       => 1
   }
 
+
+
 ############################## hands #################################
 
   def get_royal_flush(cards)
@@ -62,10 +64,46 @@ class RankingUtility
     return nil
   end
 
-  def get_full_house
+  def get_full_house(cards)
+    pair = []
+    three_of_a_kind = []
+    cards = order_cards_by_face(cards)
+    
+    if get_three_of_a_kind(cards) == nil
+      return nil
+    end
+    returned_three_of_a_kind, delete, three_of_a_kind_high_card, delete = get_three_of_a_kind(cards)
+    three_of_a_kind = returned_three_of_a_kind[0..2]
+
+    if get_pair(cards) == nil
+      return nil
+    end
+    returned_pair, delete, pair_high_card, delete = get_pair(cards)
+    pair = returned_pair[0..1]
+
+    cards = get_merged_cards(pair, three_of_a_kind)
+    return cards, HAND_NAMES['FULL_HOUSE'], three_of_a_kind_high_card, pair_high_card
   end
 
-  def get_flush
+  def get_flush(cards)
+    found = false
+    sets_of_cards_by_suit = break_into_collection_of_same_suit(cards)
+    sets_of_cards_by_suit.each do |set|
+      puts set
+      unless set == []
+        if set.count >= 5
+          cards = set
+          found = true
+        end
+      end
+      puts found
+    end
+    if found == false
+      return nil
+    end
+    cards = order_cards_by_suit(cards)
+    cards = cards[0..4]
+    return cards, HAND_NAMES['FLUSH'], cards.at(0) #cards, hand's value, high card
   end
 
 #Get straight returns the cards belonging to the hand, the value of the hand, and the high card.
@@ -89,7 +127,29 @@ class RankingUtility
     return cards, HAND_NAMES['STRAIGHT'], cards[0] #cards, hand's value, high card
   end
 
-  def get_three_of_a_kind
+  def get_three_of_a_kind(cards)
+    cards = order_cards_by_face(cards)
+    three_of_a_kind = []
+    index = 0
+    found = false
+    while (index < cards.count-2) && found != true
+      if cards.at(index).face_value == cards.at(index+1).face_value && cards.at(index+1).face_value == cards.at(index+2).face_value
+        three_of_a_kind.push(cards.at(index))
+        three_of_a_kind.push(cards.at(index+1))
+        three_of_a_kind.push(cards.at(index+2))
+        found = true
+      end
+      index += 1
+    end
+    if found == false
+      return nil
+    end
+    cards = remove_cards_from_collection(three_of_a_kind, cards)
+    cards = cards[0..1]
+    delete, delete, three_of_a_kind_high_card = get_high_card(three_of_a_kind)
+    delete, delete, high_card = get_high_card(cards)
+    cards = get_merged_cards(three_of_a_kind, cards)
+    return cards, HAND_NAMES['THREE_OF_A_KIND'], three_of_a_kind_high_card, high_card
   end
 
   def get_two_pair(cards)
@@ -237,7 +297,7 @@ class RankingUtility
     return sets_of_five_cards
   end
 
-  def check_for_ace_and_add_low_ace
+  def check_for_ace_and_add_low_ace(cards) #Necessary for get_straight to work properly
   end
 
   def get_merged_pocket_and_table(pocket_cards, table_cards)
@@ -272,6 +332,10 @@ class RankingUtility
 
   ######################### For debuging ###############################
     def print_cards(cards)
+    if(cards == nil)
+      puts "Print Nil"
+      return
+    end
     cards.each do |card|
       print card.to_s + ' '
     end
@@ -348,7 +412,24 @@ cards = []
 # print (rankingUtility.get_four_of_a_kind(cards))
 # puts ''
 
-######################### Get Two Pair ############################# checked
+######################### Get Full House ############################# checked
+
+# cards.clear
+# cards.push(Card.new("2d"))
+# cards.push(Card.new("Kh"))
+# cards.push(Card.new("Qh"))
+# cards.push(Card.new("8h"))
+# cards.push(Card.new("8c"))
+# cards.push(Card.new("2h"))
+# cards.push(Card.new("2s"))
+# rankingUtility.print_cards(cards)
+# print (rankingUtility.get_full_house(cards))
+# cards, delete, delete, delete = rankingUtility.get_full_house(cards)
+# puts ''
+# rankingUtility.print_cards(cards)
+# puts ''
+
+######################### Get Flush ############################# checked
 
 cards.clear
 cards.push(Card.new("2d"))
@@ -357,13 +438,65 @@ cards.push(Card.new("Qh"))
 cards.push(Card.new("Jh"))
 cards.push(Card.new("8c"))
 cards.push(Card.new("2h"))
+cards.push(Card.new("2s"))
+rankingUtility.print_cards(cards)
+print (rankingUtility.get_flush(cards))
+cards, delete, delete = rankingUtility.get_flush(cards)
+puts ''
+rankingUtility.print_cards(cards)
+puts ''
+
+cards = []
+# puts cards
+cards.push(Card.new("2d"))
+cards.push(Card.new("Kh"))
+cards.push(Card.new("Qh"))
+cards.push(Card.new("Js"))
 cards.push(Card.new("8h"))
+cards.push(Card.new("2h"))
+cards.push(Card.new("1h"))
 rankingUtility.print_cards(cards)
-print (rankingUtility.get_two_pair(cards))
-cards, delete, delete, delete, delete = rankingUtility.get_two_pair(cards)
+print(cards)
+print (rankingUtility.get_flush(cards))
+cards, delete, delete = rankingUtility.get_flush(cards)
 puts ''
 rankingUtility.print_cards(cards)
 puts ''
+
+######################### Get Three of a Kind ############################# checked
+
+# cards.clear
+# cards.push(Card.new("2d"))
+# cards.push(Card.new("Kh"))
+# cards.push(Card.new("Qh"))
+# cards.push(Card.new("Jh"))
+# cards.push(Card.new("8c"))
+# cards.push(Card.new("2h"))
+# cards.push(Card.new("2s"))
+# rankingUtility.print_cards(cards)
+# print (rankingUtility.get_three_of_a_kind(cards))
+# cards, delete, delete, delete = rankingUtility.get_three_of_a_kind(cards)
+# puts ''
+# rankingUtility.print_cards(cards)
+# puts ''
+
+
+######################### Get Two Pair ############################# checked
+
+# cards.clear
+# cards.push(Card.new("2d"))
+# cards.push(Card.new("Kh"))
+# cards.push(Card.new("Qh"))
+# cards.push(Card.new("Jh"))
+# cards.push(Card.new("8c"))
+# cards.push(Card.new("2h"))
+# cards.push(Card.new("8h"))
+# rankingUtility.print_cards(cards)
+# print (rankingUtility.get_two_pair(cards))
+# cards, delete, delete, delete, delete = rankingUtility.get_two_pair(cards)
+# puts ''
+# rankingUtility.print_cards(cards)
+# puts ''
 
 ######################### Get Pair ############################# checked
 
