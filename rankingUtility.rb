@@ -1,4 +1,5 @@
 require_relative 'card'
+require_relative 'hand'
 
 class RankingUtility
   NUMBER_OF_CARDS_IN_HAND = 5
@@ -16,9 +17,52 @@ class RankingUtility
     'HIGH_CARD'       => 1
   }
 
+############################## return winner ##############################
 
+############################## search for hands ##############################
 
-############################## hands #################################
+def get_hand(cards)
+  unless get_royal_flush(cards) == nil
+    cards, ranking = get_royal_flush(cards)
+    return Hand.new(cards, ranking, 14, 13, 12)
+  end
+  unless get_straight_flush(cards) == nil
+    cards, ranking, first_high_card = get_straight_flush(cards)
+    return Hand.new(cards, ranking, first_high_card, 0, 0)
+  end
+  unless get_four_of_a_kind(cards) == nil
+    cards, ranking, first_high_card, second_high_card = get_four_of_a_kind(cards)
+    return Hand.new(cards, ranking, first_high_card, second_high_card, 0)
+  end
+  unless get_full_house(cards) == nil
+    cards, ranking, first_high_card, second_high_card = get_full_house(cards)
+    return Hand.new(cards, ranking, first_high_card, second_high_card, 0)
+  end
+  unless get_flush(cards) == nil
+    cards, ranking, first_high_card = get_flush(cards)
+    return Hand.new(cards, ranking, first_high_card, 0, 0)
+  end
+  unless get_straight(cards) == nil
+    cards, ranking, first_high_card = get_straight(cards)
+    return Hand.new(cards, ranking, first_high_card, 0, 0)
+  end
+  unless get_three_of_a_kind(cards) == nil
+    cards, ranking, first_high_card, second_high_card = get_three_of_a_kind(cards)
+    return Hand.new(cards, ranking, first_high_card, second_high_card, 0)
+  end
+  unless get_two_pair(cards) == nil
+    cards, ranking, first_high_card, second_high_card, high_card = get_two_pair(cards)
+    return Hand.new(cards, ranking, first_high_card, second_high_card, high_card)
+  end
+  unless get_pair(cards) == nil
+    cards, ranking, first_high_card, high_card = get_pair(cards)
+    return Hand.new(cards, ranking, first_high_card, high_card, 0)
+  end
+  cards, ranking, high_card = get_high_card(cards)
+  return Hand.new(cards, ranking, first_high_card, high_card, 0)
+end
+
+############################## hands analyzers #################################
 
   def get_royal_flush(cards)
     collection_of_cards_by_suit = break_into_collection_of_same_suit(cards)
@@ -109,6 +153,7 @@ class RankingUtility
 
 #Get straight returns the cards belonging to the hand, the value of the hand, and the high card.
 #The input must be a collection of 5 cards with non repeating face values, this requires the cards to be filterd before being passed to this method.
+
   def get_straight(cards)
     if cards.count < NUMBER_OF_CARDS_IN_HAND
       return nil
@@ -433,40 +478,40 @@ cards = []
 
 ######################### Get Flush ############################# checked
 
-cards.clear
-cards.push(Card.new("2d"))
-cards.push(Card.new("Kh"))
-cards.push(Card.new("Qh"))
-cards.push(Card.new("Jh"))
-cards.push(Card.new("8c"))
-cards.push(Card.new("2h"))
-cards.push(Card.new("2s"))
-rankingUtility.print_cards(cards)
-print (rankingUtility.get_flush(cards))
-cards, delete, delete = rankingUtility.get_flush(cards)
-puts ''
-rankingUtility.print_cards(cards)
-puts ''
-
-cards = []
+# cards.clear
+# cards.push(Card.new("2d"))
+# cards.push(Card.new("Kh"))
+# cards.push(Card.new("Qh"))
+# cards.push(Card.new("Jh"))
+# cards.push(Card.new("8c"))
 # cards.push(Card.new("2h"))
 # cards.push(Card.new("2s"))
+# rankingUtility.print_cards(cards)
+# print (rankingUtility.get_flush(cards))
+# cards, delete, delete = rankingUtility.get_flush(cards)
+# puts ''
+# rankingUtility.print_cards(cards)
+# puts ''
 
-cards.clear
-cards.push(Card.new("2d"))
-cards.push(Card.new("Kh"))
-cards.push(Card.new("Qh"))
-cards.push(Card.new("Jd"))
-cards.push(Card.new("8h"))
-cards.push(Card.new("2h"))
-cards.push(Card.new("3h"))
-rankingUtility.print_cards(cards)
-print(cards)
-print (rankingUtility.get_flush(cards))
-cards, delete, delete = rankingUtility.get_flush(cards)
-puts ''
-rankingUtility.print_cards(cards)
-puts ''
+# cards = []
+# # cards.push(Card.new("2h"))
+# # cards.push(Card.new("2s"))
+
+# cards.clear
+# cards.push(Card.new("2d"))
+# cards.push(Card.new("Kh"))
+# cards.push(Card.new("Qh"))
+# cards.push(Card.new("Jd"))
+# cards.push(Card.new("8h"))
+# cards.push(Card.new("2h"))
+# cards.push(Card.new("3h"))
+# rankingUtility.print_cards(cards)
+# print(cards)
+# print (rankingUtility.get_flush(cards))
+# cards, delete, delete = rankingUtility.get_flush(cards)
+# puts ''
+# rankingUtility.print_cards(cards)
+# puts ''
 
 ######################### Get Three of a Kind ############################# checked
 
