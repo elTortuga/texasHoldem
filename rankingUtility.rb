@@ -86,8 +86,9 @@ class RankingUtility
   end
 
   def get_flush(cards)
-    found = false
     sets_of_cards_by_suit = break_into_collection_of_same_suit(cards)
+    found = false
+    print_cards(cards)
     sets_of_cards_by_suit.each do |set|
       puts set
       unless set == []
@@ -247,6 +248,7 @@ class RankingUtility
 
   def break_into_collection_of_same_suit(cards)
     collection_of_cards_by_suit = [[], [], [], []]
+    puts cards
     cards = order_cards_by_suit(cards)
     cards.each do |card|
       case card.suit_lookup
@@ -447,14 +449,17 @@ rankingUtility.print_cards(cards)
 puts ''
 
 cards = []
-# puts cards
+# cards.push(Card.new("2h"))
+# cards.push(Card.new("2s"))
+
+cards.clear
 cards.push(Card.new("2d"))
 cards.push(Card.new("Kh"))
 cards.push(Card.new("Qh"))
-cards.push(Card.new("Js"))
+cards.push(Card.new("Jd"))
 cards.push(Card.new("8h"))
 cards.push(Card.new("2h"))
-cards.push(Card.new("1h"))
+cards.push(Card.new("3h"))
 rankingUtility.print_cards(cards)
 print(cards)
 print (rankingUtility.get_flush(cards))
