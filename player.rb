@@ -1,10 +1,11 @@
 class Player
-  attr_accessor :hand, :pocket, :name, :tokens, :is_turn
+  attr_accessor :hand, :pocket, :name, :tokens, :is_turn, :folded
 
   def initialize(name, tokens)
     @name = name
     @tokens = tokens
     @pocket = []
+    @folded = false
   end
 
 

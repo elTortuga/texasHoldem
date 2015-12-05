@@ -43,14 +43,29 @@ class Table
     @table_cards.push(@deck.deal)
   end
 
-  def betTurn
+  def bet_turn
     @deck.deal #burn card
     @table_cards.push(@deck.deal)
   end
 
-  def betRiver
+  def bet_river
     @deck.deal #burn card
     @table_cards.push(@deck.deal)
+  end
+
+  ########################### return winner ######################
+
+  def get_winner
+    winners = []
+
+    players.each do | player | #remove folded players from
+      winners.push(player) unless 
+    end
+
+
+
+
+
   end
 
 
@@ -72,7 +87,7 @@ class Table
   end
 end
 
-list_of_players = [["bob", 500],["joe", 500], ["megan", 500]]
+list_of_players = [["bob", 500],["joe", 500], ["megan", 500], ["sam", 500]]
 
 table = Table.new(list_of_players, 123)
 table.print_players_info
@@ -84,8 +99,8 @@ table.deal_pockets
 table.print_players_info
 
 table.call_flop
-table.betTurn
-table.betRiver
+table.bet_turn
+table.bet_river
 
 table.print_cards(table.table_cards)
 

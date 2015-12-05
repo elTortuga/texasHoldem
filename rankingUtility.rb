@@ -19,48 +19,49 @@ class RankingUtility
 
 ############################## return winner ##############################
 
+
 ############################## search for hands ##############################
 
-def get_hand(cards)
-  unless get_royal_flush(cards) == nil
-    cards, ranking = get_royal_flush(cards)
-    return Hand.new(cards, ranking, 14, 13, 12)
-  end
-  unless get_straight_flush(cards) == nil
-    cards, ranking, first_high_card = get_straight_flush(cards)
-    return Hand.new(cards, ranking, first_high_card, 0, 0)
-  end
-  unless get_four_of_a_kind(cards) == nil
-    cards, ranking, first_high_card, second_high_card = get_four_of_a_kind(cards)
-    return Hand.new(cards, ranking, first_high_card, second_high_card, 0)
-  end
-  unless get_full_house(cards) == nil
-    cards, ranking, first_high_card, second_high_card = get_full_house(cards)
-    return Hand.new(cards, ranking, first_high_card, second_high_card, 0)
-  end
-  unless get_flush(cards) == nil
-    cards, ranking, first_high_card = get_flush(cards)
-    return Hand.new(cards, ranking, first_high_card, 0, 0)
-  end
-  unless get_straight(cards) == nil
-    cards, ranking, first_high_card = get_straight(cards)
-    return Hand.new(cards, ranking, first_high_card, 0, 0)
-  end
-  unless get_three_of_a_kind(cards) == nil
-    cards, ranking, first_high_card, second_high_card = get_three_of_a_kind(cards)
-    return Hand.new(cards, ranking, first_high_card, second_high_card, 0)
-  end
-  unless get_two_pair(cards) == nil
-    cards, ranking, first_high_card, second_high_card, high_card = get_two_pair(cards)
-    return Hand.new(cards, ranking, first_high_card, second_high_card, high_card)
-  end
-  unless get_pair(cards) == nil
-    cards, ranking, first_high_card, high_card = get_pair(cards)
+  def get_hand(cards)
+    unless get_royal_flush(cards) == nil
+      cards, ranking = get_royal_flush(cards)
+      return Hand.new(cards, ranking, 14, 13, 12)
+    end
+    unless get_straight_flush(cards) == nil
+      cards, ranking, first_high_card = get_straight_flush(cards)
+      return Hand.new(cards, ranking, first_high_card, 0, 0)
+    end
+    unless get_four_of_a_kind(cards) == nil
+      cards, ranking, first_high_card, second_high_card = get_four_of_a_kind(cards)
+      return Hand.new(cards, ranking, first_high_card, second_high_card, 0)
+    end
+    unless get_full_house(cards) == nil
+      cards, ranking, first_high_card, second_high_card = get_full_house(cards)
+      return Hand.new(cards, ranking, first_high_card, second_high_card, 0)
+    end
+    unless get_flush(cards) == nil
+      cards, ranking, first_high_card = get_flush(cards)
+      return Hand.new(cards, ranking, first_high_card, 0, 0)
+    end
+    unless get_straight(cards) == nil
+      cards, ranking, first_high_card = get_straight(cards)
+      return Hand.new(cards, ranking, first_high_card, 0, 0)
+    end
+    unless get_three_of_a_kind(cards) == nil
+      cards, ranking, first_high_card, second_high_card = get_three_of_a_kind(cards)
+      return Hand.new(cards, ranking, first_high_card, second_high_card, 0)
+    end
+    unless get_two_pair(cards) == nil
+      cards, ranking, first_high_card, second_high_card, high_card = get_two_pair(cards)
+      return Hand.new(cards, ranking, first_high_card, second_high_card, high_card)
+    end
+    unless get_pair(cards) == nil
+      cards, ranking, first_high_card, high_card = get_pair(cards)
+      return Hand.new(cards, ranking, first_high_card, high_card, 0)
+    end
+    cards, ranking, high_card = get_high_card(cards)
     return Hand.new(cards, ranking, first_high_card, high_card, 0)
   end
-  cards, ranking, high_card = get_high_card(cards)
-  return Hand.new(cards, ranking, first_high_card, high_card, 0)
-end
 
 ############################## hands analyzers #################################
 
@@ -151,26 +152,27 @@ end
     return cards, HAND_NAMES['FLUSH'], cards.at(0) #cards, hand's value, high card
   end
 
-#Get straight returns the cards belonging to the hand, the value of the hand, and the high card.
-#The input must be a collection of 5 cards with non repeating face values, this requires the cards to be filterd before being passed to this method.
-
   def get_straight(cards)
+    cards = remove_repeated_cards(cards)
     if cards.count < NUMBER_OF_CARDS_IN_HAND
       return nil
     end
-    index = 0
-    while index < cards.count-1
-      if (cards.at(index).face_value - cards.at(index+1).face_value) != 1
-        return nil
+    cards = check_for_ace_and_add_low_ace(cards)
+    sets_of_five_cards = break_into_sets_of_five_cards(cards)
+    sets_of_five_cards.each do |set|
+      index = 0
+      exit = false
+      while (index < set.count-1) && exit == false
+        if (set.at(index).face_value - set.at(index+1).face_value) != 1
+          exit = true
+        end
+        index += 1
       end
-      index += 1
+      if exit == false
+        return set, HAND_NAMES['STRAIGHT'], set[0] #cards, hand's value, high card
+      end
     end
-    index = cards.count - NUMBER_OF_CARDS_IN_HAND
-    while index > 0
-      cards.pop
-      index -= 1
-    end
-    return cards, HAND_NAMES['STRAIGHT'], cards[0] #cards, hand's value, high card
+    return nil
   end
 
   def get_three_of_a_kind(cards)
@@ -345,6 +347,28 @@ end
   end
 
   def check_for_ace_and_add_low_ace(cards) #Necessary for get_straight to work properly
+    cards.each do |card|
+      if card.face_value == Card::FACE_VALUES['A']
+        card_string = card.to_s
+        card_string[0] = 'L'
+        cards.push(Card.new(card_string))
+        return cards
+      end
+    end
+    return cards
+  end
+
+  def remove_repeated_cards(cards) #necessaryy for get_straight to work properly
+    cards = order_cards_by_face(cards)
+    index = 0
+    while (index < (cards.count-1))
+      if cards.at(index).face_value == cards.at(index+1).face_value
+        cards.delete(cards.at(index))
+      else
+      index += 1
+      end
+    end
+    return cards
   end
 
   def get_merged_pocket_and_table(pocket_cards, table_cards)
@@ -590,24 +614,62 @@ cards = []
 
 ######################### Straight ############################# checked
 
-# cards.clear
-# cards.push(Card.new("Ad"))
-# cards.push(Card.new("Kh"))
-# cards.push(Card.new("Qc"))
-# cards.push(Card.new("Js"))
-# cards.push(Card.new("0h"))
-# cards.push(Card.new("9h"))
-# cards.push(Card.new("5h"))
-# cards.push(Card.new("4h"))
-# cards.push(Card.new("3h"))
-# cards.push(Card.new("2h"))
-# cards.push(Card.new("Lh"))
-# rankingUtility.print_cards(cards)
-# sets_of_five = rankingUtility.break_into_sets_of_five_cards(cards)
-# sets_of_five.each do |c|
-#   print (rankingUtility.get_straight(c))
-# end
-# puts ''
+cards.clear
+cards.push(Card.new("Ad"))
+cards.push(Card.new("Ac"))
+cards.push(Card.new("Kh"))
+cards.push(Card.new("Qc"))
+cards.push(Card.new("Js"))
+cards.push(Card.new("0h"))
+cards.push(Card.new("9h"))
+cards.push(Card.new("5h"))
+cards.push(Card.new("4h"))
+cards.push(Card.new("3h"))
+cards.push(Card.new("2h"))
+rankingUtility.print_cards(cards)
+print (rankingUtility.get_straight(cards))
+puts
+cards, delete, delete = rankingUtility.get_straight(cards)
+rankingUtility.print_cards(cards)
+puts ''
+
+cards.clear
+cards.push(Card.new("Ad"))
+cards.push(Card.new("Ac"))
+cards.push(Card.new("Qh"))
+cards.push(Card.new("Qc"))
+cards.push(Card.new("Js"))
+cards.push(Card.new("0h"))
+cards.push(Card.new("9h"))
+cards.push(Card.new("5h"))
+cards.push(Card.new("4h"))
+cards.push(Card.new("3h"))
+cards.push(Card.new("2h"))
+rankingUtility.print_cards(cards)
+print (rankingUtility.get_straight(cards))
+puts
+cards, delete, delete = rankingUtility.get_straight(cards)
+rankingUtility.print_cards(cards)
+puts ''
+
+cards.clear
+cards.push(Card.new("Ad"))
+cards.push(Card.new("Ac"))
+cards.push(Card.new("Qh"))
+cards.push(Card.new("Qc"))
+cards.push(Card.new("Js"))
+cards.push(Card.new("0h"))
+cards.push(Card.new("9h"))
+cards.push(Card.new("5h"))
+cards.push(Card.new("4h"))
+cards.push(Card.new("4c"))
+cards.push(Card.new("2h"))
+rankingUtility.print_cards(cards)
+print (rankingUtility.get_straight(cards))
+puts
+cards, delete, delete = rankingUtility.get_straight(cards)
+rankingUtility.print_cards(cards)
+puts ''
 
 ######################### Break into Sets by Face Value ############################# checked
 
@@ -627,3 +689,56 @@ cards = []
 # print (rankingUtility.break_into_collection_of_same_face(cards))
 # puts ''
 
+######################### Check for An Ace ############################# checked
+
+# cards.clear
+# cards.push(Card.new("Ad"))
+# cards.push(Card.new("Ac"))
+# cards.push(Card.new("Qc"))
+# cards.push(Card.new("0s"))
+# cards.push(Card.new("0h"))
+# cards.push(Card.new("0c"))
+# cards.push(Card.new("5h"))
+# cards.push(Card.new("4h"))
+# cards.push(Card.new("3h"))
+# cards.push(Card.new("3c"))
+# cards.push(Card.new("Ah"))
+# rankingUtility.print_cards(cards)
+# print (rankingUtility.check_for_ace_and_add_low_ace(cards))
+# puts ''
+
+######################### Remove reapeated cards ############################# checked
+
+# cards.clear
+# cards.push(Card.new("Ad"))
+# cards.push(Card.new("Ac"))
+# cards.push(Card.new("Qc"))
+# cards.push(Card.new("0s"))
+# cards.push(Card.new("0h"))
+# cards.push(Card.new("0c"))
+# cards.push(Card.new("5h"))
+# cards.push(Card.new("4h"))
+# cards.push(Card.new("3h"))
+# cards.push(Card.new("3c"))
+# cards.push(Card.new("Ah"))
+# rankingUtility.print_cards(cards)
+# print (rankingUtility.remove_repeated_cards(cards))
+# puts
+# rankingUtility.print_cards(rankingUtility.remove_repeated_cards(cards))
+# puts ''
+
+# cards.clear
+# cards.push(Card.new("Ad"))
+# cards.push(Card.new("Ac"))
+# cards.push(Card.new("Qc"))
+# cards.push(Card.new("0s"))
+# cards.push(Card.new("0h"))
+# cards.push(Card.new("0c"))
+# cards.push(Card.new("3h"))
+# cards.push(Card.new("3c"))
+# cards.push(Card.new("Ah"))
+# rankingUtility.print_cards(cards)
+# print (rankingUtility.remove_repeated_cards(cards))
+# puts
+# rankingUtility.print_cards(rankingUtility.remove_repeated_cards(cards))
+# puts ''
