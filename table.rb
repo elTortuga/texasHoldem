@@ -59,12 +59,22 @@ class Table
     winners = []
 
     players.each do | player | #remove folded players from
-      winners.push(player) unless 
+      winners.push(player) if player.folded == false
+    end
+
+    index = 0
+    while (index < winners.count)
+      if winners.at(index).hand.ranking > winners.at(index+1).hand.ranking
+        winners.delete(winners.at(index+1))
+      end
     end
 
 
+    end
 
-
+    # if winners.count == 0 #all players fold?
+    #   return nil
+    # end
 
   end
 

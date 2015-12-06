@@ -1,4 +1,5 @@
 require_relative 'card'
+require_relative 'rankingUtility'
 
 class Hand
 
@@ -10,6 +11,10 @@ class Hand
     @first_high_card = first_high_card
     @second_high_card = second_high_card
     @third_high_card = third_high_card
+  end
+
+  def to_s
+
   end
   
 end

@@ -371,7 +371,7 @@ class RankingUtility
     return cards
   end
 
-  def get_merged_pocket_and_table(pocket_cards, table_cards)
+  def get_merged_pocket_and_table(pocket_cards, table_cards) #refactor this out for get_merged_cards
     merged_cards = []
     table_cards.each do |card|
       merged_cards.push(card)
@@ -402,7 +402,7 @@ class RankingUtility
   end
 
   ######################### For debuging ###############################
-    def print_cards(cards)
+  def print_cards(cards)
     if(cards == nil)
       puts "Print Nil"
       return

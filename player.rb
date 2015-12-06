@@ -1,3 +1,6 @@
+require_relative 'rankingUtility'
+require_relative 'hand'
+
 class Player
   attr_accessor :hand, :pocket, :name, :tokens, :is_turn, :folded
 
@@ -8,7 +11,9 @@ class Player
     @folded = false
   end
 
-
+  def set_hand(table_cards)
+    @hand = Hand.new(RankingUtility.get_merged_cards(@pocket, table_cards)
+  end
 
 ########################### Utility ###########################
   def to_s
@@ -17,5 +22,4 @@ class Player
       print @pocket[0].to_s + ' ' + @pocket[1].to_s
     end
   end
-
 end
