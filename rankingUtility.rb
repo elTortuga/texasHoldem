@@ -17,9 +17,6 @@ class RankingUtility
     'HIGH_CARD'       => 1
   }
 
-############################## return winner ##############################
-
-
 ############################## search for hands ##############################
 
   def get_hand(cards)
@@ -68,7 +65,7 @@ class RankingUtility
   def get_royal_flush(cards)
     collection_of_cards_by_suit = break_into_collection_of_same_suit(cards)
     collection_of_cards_by_suit.each do |suit_collection|
-      if suit_collection != []
+      if suit_collection != [] && suit_collection.count == NUMBER_OF_CARDS_IN_HAND
         if suit_collection[0].face_value == Card::FACE_VALUES['A'] && suit_collection[1].face_value == Card::FACE_VALUES['K'] && suit_collection[2].face_value == Card::FACE_VALUES['Q'] && suit_collection[3].face_value == Card::FACE_VALUES['J'] && suit_collection[4].face_value == Card::FACE_VALUES['0']
           return suit_collection, HAND_NAMES['ROYAL_FLUSH']
         end
@@ -133,16 +130,13 @@ class RankingUtility
   def get_flush(cards)
     sets_of_cards_by_suit = break_into_collection_of_same_suit(cards)
     found = false
-    print_cards(cards)
     sets_of_cards_by_suit.each do |set|
-      puts set
       unless set == []
         if set.count >= 5
           cards = set
           found = true
         end
       end
-      puts found
     end
     if found == false
       return nil
@@ -232,7 +226,6 @@ class RankingUtility
     index = 0
     found = false
     while (index < cards.count - 1) && found != true 
-      # print cards.at(index). == cards.at(index+1)
       if cards.at(index).face_value == cards.at(index+1).face_value
         pair.push(cards.at(index))
         pair.push(cards.at(index+1))
@@ -295,7 +288,6 @@ class RankingUtility
 
   def break_into_collection_of_same_suit(cards)
     collection_of_cards_by_suit = [[], [], [], []]
-    puts cards
     cards = order_cards_by_suit(cards)
     cards.each do |card|
       case card.suit_lookup
@@ -404,7 +396,7 @@ class RankingUtility
   ######################### For debuging ###############################
   def print_cards(cards)
     if(cards == nil)
-      puts "Print Nil"
+      puts "Cards are empty"
       return
     end
     cards.each do |card|
@@ -614,62 +606,62 @@ cards = []
 
 ######################### Straight ############################# checked
 
-cards.clear
-cards.push(Card.new("Ad"))
-cards.push(Card.new("Ac"))
-cards.push(Card.new("Kh"))
-cards.push(Card.new("Qc"))
-cards.push(Card.new("Js"))
-cards.push(Card.new("0h"))
-cards.push(Card.new("9h"))
-cards.push(Card.new("5h"))
-cards.push(Card.new("4h"))
-cards.push(Card.new("3h"))
-cards.push(Card.new("2h"))
-rankingUtility.print_cards(cards)
-print (rankingUtility.get_straight(cards))
-puts
-cards, delete, delete = rankingUtility.get_straight(cards)
-rankingUtility.print_cards(cards)
-puts ''
+# cards.clear
+# cards.push(Card.new("Ad"))
+# cards.push(Card.new("Ac"))
+# cards.push(Card.new("Kh"))
+# cards.push(Card.new("Qc"))
+# cards.push(Card.new("Js"))
+# cards.push(Card.new("0h"))
+# cards.push(Card.new("9h"))
+# cards.push(Card.new("5h"))
+# cards.push(Card.new("4h"))
+# cards.push(Card.new("3h"))
+# cards.push(Card.new("2h"))
+# rankingUtility.print_cards(cards)
+# print (rankingUtility.get_straight(cards))
+# puts
+# cards, delete, delete = rankingUtility.get_straight(cards)
+# rankingUtility.print_cards(cards)
+# puts ''
 
-cards.clear
-cards.push(Card.new("Ad"))
-cards.push(Card.new("Ac"))
-cards.push(Card.new("Qh"))
-cards.push(Card.new("Qc"))
-cards.push(Card.new("Js"))
-cards.push(Card.new("0h"))
-cards.push(Card.new("9h"))
-cards.push(Card.new("5h"))
-cards.push(Card.new("4h"))
-cards.push(Card.new("3h"))
-cards.push(Card.new("2h"))
-rankingUtility.print_cards(cards)
-print (rankingUtility.get_straight(cards))
-puts
-cards, delete, delete = rankingUtility.get_straight(cards)
-rankingUtility.print_cards(cards)
-puts ''
+# cards.clear
+# cards.push(Card.new("Ad"))
+# cards.push(Card.new("Ac"))
+# cards.push(Card.new("Qh"))
+# cards.push(Card.new("Qc"))
+# cards.push(Card.new("Js"))
+# cards.push(Card.new("0h"))
+# cards.push(Card.new("9h"))
+# cards.push(Card.new("5h"))
+# cards.push(Card.new("4h"))
+# cards.push(Card.new("3h"))
+# cards.push(Card.new("2h"))
+# rankingUtility.print_cards(cards)
+# print (rankingUtility.get_straight(cards))
+# puts
+# cards, delete, delete = rankingUtility.get_straight(cards)
+# rankingUtility.print_cards(cards)
+# puts ''
 
-cards.clear
-cards.push(Card.new("Ad"))
-cards.push(Card.new("Ac"))
-cards.push(Card.new("Qh"))
-cards.push(Card.new("Qc"))
-cards.push(Card.new("Js"))
-cards.push(Card.new("0h"))
-cards.push(Card.new("9h"))
-cards.push(Card.new("5h"))
-cards.push(Card.new("4h"))
-cards.push(Card.new("4c"))
-cards.push(Card.new("2h"))
-rankingUtility.print_cards(cards)
-print (rankingUtility.get_straight(cards))
-puts
-cards, delete, delete = rankingUtility.get_straight(cards)
-rankingUtility.print_cards(cards)
-puts ''
+# cards.clear
+# cards.push(Card.new("Ad"))
+# cards.push(Card.new("Ac"))
+# cards.push(Card.new("Qh"))
+# cards.push(Card.new("Qc"))
+# cards.push(Card.new("Js"))
+# cards.push(Card.new("0h"))
+# cards.push(Card.new("9h"))
+# cards.push(Card.new("5h"))
+# cards.push(Card.new("4h"))
+# cards.push(Card.new("4c"))
+# cards.push(Card.new("2h"))
+# rankingUtility.print_cards(cards)
+# print (rankingUtility.get_straight(cards))
+# puts
+# cards, delete, delete = rankingUtility.get_straight(cards)
+# rankingUtility.print_cards(cards)
+# puts ''
 
 ######################### Break into Sets by Face Value ############################# checked
 
@@ -742,3 +734,20 @@ puts ''
 # puts
 # rankingUtility.print_cards(rankingUtility.remove_repeated_cards(cards))
 # puts ''
+
+######################### Get Hand ############################# checked
+
+cards.clear
+cards.push(Card.new("Ad"))
+cards.push(Card.new("Kh"))
+cards.push(Card.new("Qc"))
+cards.push(Card.new("Js"))
+cards.push(Card.new("9h"))
+cards.push(Card.new("4h"))
+cards.push(Card.new("2h"))
+rankingUtility.print_cards(cards)
+hand = rankingUtility.get_hand(cards)
+print hand
+puts
+puts
+

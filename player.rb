@@ -2,11 +2,11 @@ require_relative 'rankingUtility'
 require_relative 'hand'
 
 class Player
-  attr_accessor :hand, :pocket, :name, :tokens, :is_turn, :folded
+  attr_accessor :hand, :pocket, :name, :chips, :is_turn, :folded, :player_ID
 
   def initialize(name, tokens)
     @name = name
-    @tokens = tokens
+    @chips = chips
     @pocket = []
     @folded = false
   end
@@ -17,7 +17,7 @@ class Player
 
 ########################### Utility ###########################
   def to_s
-    print @name + ' ' + @tokens.to_s + ' '
+    print @name + ' ' + @chips.to_s + ' '
     if @pocket.any?
       print @pocket[0].to_s + ' ' + @pocket[1].to_s
     end

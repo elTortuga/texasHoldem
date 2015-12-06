@@ -1,5 +1,5 @@
 class Card
-  attr_reader :suit, :face
+  attr_reader :suit, :face #add card_ID?
   SUITS = "cdhs"
   FACES = "L234567890JQKA"
   SUIT_LOOKUP = {
@@ -45,5 +45,5 @@ class Card
   def to_s
      @face + @suit
   end
-  
+
 end

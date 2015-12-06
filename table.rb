@@ -16,8 +16,6 @@ class Table
     @deck.shuffle
     @table_cards = []
     @rankingUtility = RankingUtility.new
-
-
   end
 
   def add_player(player)
@@ -36,6 +34,8 @@ class Table
     end
   end
 
+  # Get user input
+
   def call_flop
     @deck.deal #burn card
     @table_cards.push(@deck.deal)
@@ -43,15 +43,21 @@ class Table
     @table_cards.push(@deck.deal)
   end
 
+  # Get user input
+
   def bet_turn
     @deck.deal #burn card
     @table_cards.push(@deck.deal)
   end
 
+  # Get user input
+
   def bet_river
     @deck.deal #burn card
     @table_cards.push(@deck.deal)
   end
+
+  # Get user input
 
   ########################### return winner ######################
 
@@ -66,20 +72,21 @@ class Table
     while (index < winners.count)
       if winners.at(index).hand.ranking > winners.at(index+1).hand.ranking
         winners.delete(winners.at(index+1))
+      elsif winners.at(index).hand.ranking < winners.at(index+1).hand.ranking
+        winners.delete(winners.at(index))
+      else
+        ##check first then second then third highcard
+        index++
       end
     end
 
-
-    end
-
-    # if winners.count == 0 #all players fold?
-    #   return nil
-    # end
-
+    return winners
   end
 
-
   ########################### Utilities ######################
+
+  def
+  end
 
   def print_players_info
     @players.each do |player|
@@ -120,3 +127,4 @@ cards = table.rankingUtility.order_cards_by_suit(cards)
 table.print_cards(cards)
 cards = table.rankingUtility.order_cards_by_face(cards)
 table.print_cards(cards)
+
