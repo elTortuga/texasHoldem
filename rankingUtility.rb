@@ -21,40 +21,40 @@ class RankingUtility
 
   def get_hand(cards)
     unless get_royal_flush(cards) == nil
-      cards, ranking = get_royal_flush(cards)
-      return Hand.new(cards, ranking, 14, 13, 12)
+      cards, ranking, first_high_card, second_high_card, third_high_card = get_royal_flush(cards)
+      return Hand.new(cards, ranking, first_high_card, second_high_card, third_high_card)
     end
     unless get_straight_flush(cards) == nil
-      cards, ranking, first_high_card = get_straight_flush(cards)
-      return Hand.new(cards, ranking, first_high_card, 0, 0)
+      cards, ranking, first_high_card, second_high_card, third_high_card = get_straight_flush(cards)
+      return Hand.new(cards, ranking, first_high_card, second_high_card, third_high_card)
     end
     unless get_four_of_a_kind(cards) == nil
-      cards, ranking, first_high_card, second_high_card = get_four_of_a_kind(cards)
-      return Hand.new(cards, ranking, first_high_card, second_high_card, 0)
+      cards, ranking, first_high_card, second_high_card, third_high_card = get_four_of_a_kind(cards)
+      return Hand.new(cards, ranking, first_high_card, second_high_card, third_high_card)
     end
     unless get_full_house(cards) == nil
-      cards, ranking, first_high_card, second_high_card = get_full_house(cards)
-      return Hand.new(cards, ranking, first_high_card, second_high_card, 0)
+      cards, ranking, first_high_card, second_high_card, third_high_card = get_full_house(cards)
+      return Hand.new(cards, ranking, first_high_card, second_high_card, third_high_card)
     end
     unless get_flush(cards) == nil
-      cards, ranking, first_high_card = get_flush(cards)
-      return Hand.new(cards, ranking, first_high_card, 0, 0)
+      cards, ranking, first_high_card, second_high_card, third_high_card = get_flush(cards)
+      return Hand.new(cards, ranking, first_high_card, second_high_card, third_high_card)
     end
     unless get_straight(cards) == nil
-      cards, ranking, first_high_card = get_straight(cards)
-      return Hand.new(cards, ranking, first_high_card, 0, 0)
+      cards, ranking, first_high_card, second_high_card, third_high_card = get_straight(cards)
+      return Hand.new(cards, ranking, first_high_card, second_high_card, third_high_card)
     end
     unless get_three_of_a_kind(cards) == nil
-      cards, ranking, first_high_card, second_high_card = get_three_of_a_kind(cards)
-      return Hand.new(cards, ranking, first_high_card, second_high_card, 0)
+      cards, ranking, first_high_card, second_high_card, third_high_card = get_three_of_a_kind(cards)
+      return Hand.new(cards, ranking, first_high_card, second_high_card, third_high_card)
     end
     unless get_two_pair(cards) == nil
-      cards, ranking, first_high_card, second_high_card, high_card = get_two_pair(cards)
-      return Hand.new(cards, ranking, first_high_card, second_high_card, high_card)
+      cards, ranking, first_high_card, second_high_card, third_high_card = get_two_pair(cards)
+      return Hand.new(cards, ranking, first_high_card, second_high_card, third_high_card)
     end
     unless get_pair(cards) == nil
-      cards, ranking, first_high_card, high_card = get_pair(cards)
-      return Hand.new(cards, ranking, first_high_card, high_card, 0)
+      cards, ranking, first_high_card, second_high_card, third_high_card = get_pair(cards)
+      return Hand.new(cards, ranking, first_high_card, second_high_card, third_high_card)
     end
     cards, ranking, first_high_card, second_high_card, third_high_card = get_high_card(cards)
     return Hand.new(cards, ranking, first_high_card, second_high_card, third_high_card)
@@ -67,7 +67,7 @@ class RankingUtility
     collection_of_cards_by_suit.each do |suit_collection|
       if suit_collection != [] && suit_collection.count == NUMBER_OF_CARDS_IN_HAND
         if suit_collection[0].face_value == Card::FACE_VALUES['A'] && suit_collection[1].face_value == Card::FACE_VALUES['K'] && suit_collection[2].face_value == Card::FACE_VALUES['Q'] && suit_collection[3].face_value == Card::FACE_VALUES['J'] && suit_collection[4].face_value == Card::FACE_VALUES['0']
-          return suit_collection, HAND_NAMES['ROYAL_FLUSH']
+          return suit_collection, HAND_NAMES['ROYAL_FLUSH'], suit_collection.at(0), suit_collection.at(1), suit_collection.at(2)
         end
       end
     end
@@ -80,7 +80,7 @@ class RankingUtility
       unless suit_collection == []
         unless get_straight(suit_collection) == nil
           cards, name, high_card = get_straight(suit_collection) # FIX correctly gather only the cards from the returned tuple
-          return cards, HAND_NAMES['STRAIGHT_FLUSH'], cards[0] 
+          return cards, HAND_NAMES['STRAIGHT_FLUSH'], cards.at(0), cards.at(1), cards.at(2)
         end
       end
     end
@@ -98,10 +98,10 @@ class RankingUtility
     end
     unless four_cards == []
       high_card = []
-      high_card.push(set_by_faces.at(0).at(0))
+      high_card.push(remove_cards_from_collection(four_cards, cards).at(0))
       cards = get_merged_cards(four_cards, high_card)
       four_of_a_kind_high_card = four_cards[0]
-      return cards, HAND_NAMES['FOUR_OF_A_KIND'], four_of_a_kind_high_card, high_card[0]
+      return cards, HAND_NAMES['FOUR_OF_A_KIND'], four_of_a_kind_high_card, high_card, high_card
     end
     return nil
   end
@@ -126,7 +126,7 @@ class RankingUtility
     pair = returned_pair[0..1]
 
     cards = get_merged_cards(pair, three_of_a_kind)
-    return cards, HAND_NAMES['FULL_HOUSE'], three_of_a_kind_high_card, pair_high_card
+    return cards, HAND_NAMES['FULL_HOUSE'], three_of_a_kind_high_card, pair_high_card, pair_high_card
   end
 
   def get_flush(cards)
@@ -145,7 +145,7 @@ class RankingUtility
     end
     cards = order_cards_by_suit(cards)
     cards = cards[0..4]
-    return cards, HAND_NAMES['FLUSH'], cards.at(0) #cards, hand's value, high card
+    return cards, HAND_NAMES['FLUSH'], cards.at(0), cards.at(1), cards.at(2) 
   end
 
   def get_straight(cards)
@@ -165,7 +165,7 @@ class RankingUtility
         index += 1
       end
       if exit == false
-        return set, HAND_NAMES['STRAIGHT'], set[0] #cards, hand's value, high card
+        return set, HAND_NAMES['STRAIGHT'], set[0], set[0], set[0]
       end
     end
     return nil
@@ -193,7 +193,7 @@ class RankingUtility
     delete, delete, three_of_a_kind_high_card = get_high_card(three_of_a_kind)
     delete, delete, high_card = get_high_card(cards)
     cards = get_merged_cards(three_of_a_kind, cards)
-    return cards, HAND_NAMES['THREE_OF_A_KIND'], three_of_a_kind_high_card, high_card
+    return cards, HAND_NAMES['THREE_OF_A_KIND'], three_of_a_kind_high_card, cards[3], cards[4]
   end
 
   def get_two_pair(cards)
@@ -243,7 +243,7 @@ class RankingUtility
     delete, delete, high_card = get_high_card(cards) # FIX handle tuples correctly
     pair_high_card = pair.at(0)
     cards = get_merged_cards(pair, cards)
-    return cards, HAND_NAMES['ONE_PAIR'], pair_high_card, high_card # cards, hand's value, high card of the pair, high card outside the pair 
+    return cards, HAND_NAMES['ONE_PAIR'], pair_high_card, high_card, high_card # cards, hand's value, high card of the pair, high card outside the pair 
   end
 
   def get_high_card(cards)

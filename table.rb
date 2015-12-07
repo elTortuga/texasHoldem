@@ -74,8 +74,16 @@ class Table
     @players.each do | player | #remove folded players from
       winners.push(player) if player.folded == false
     end
-    winners = winners.sort_by {|winner| [winner.hand.ranking]}.reverse
+    winners = winners.sort_by {|winner| [winner.hand.ranking, winner.hand.first_high_card.face_value, winner.hand.second_high_card.face_value, winner.hand.third_high_card.face_value]}.reverse
     
+
+    winners.each do |winner|
+      puts winner.name
+      winner.hand.to_s
+      puts
+    end
+    # print_players_info(winners)
+
     index = 0
     while index < winners.count - 1
       if winners[index].hand.ranking > winners[index+1].hand.ranking
@@ -83,8 +91,26 @@ class Table
       elsif winners[index].hand.ranking < winners[index+1].hand.ranking
         winners.delete(winners[index])
       else
-        ##check first then second then third highcard
-        index += 1
+        if winners[index].hand.first_high_card.face_value > winners[index+1].hand.first_high_card.face_value
+          winners.delete(winners[index+1])
+        elsif winners[index].hand.first_high_card.face_value < winners[index+1].hand.first_high_card.face_value
+          winners.delete(winners[index])
+        else
+          if winners[index].hand.second_high_card.face_value > winners[index+1].hand.second_high_card.face_value
+            winners.delete(winners[index+1])
+          elsif winners[index].hand.second_high_card.face_value < winners[index+1].hand.second_high_card.face_value
+            winners.delete(winners[index])
+          else
+            if winners[index].hand.third_high_card.face_value > winners[index+1].hand.third_high_card.face_value
+              winners.delete(winners[index+1])
+            elsif winners[index].hand.third_high_card.face_value < winners[index+1].hand.third_high_card.face_value
+              winners.delete(winners[index])
+            else
+              index += 1
+              #tie has occured don't remove either winner
+            end
+          end
+        end
       end
     end
 
@@ -113,11 +139,11 @@ end
 list_of_players = [["bob", 500, 1],["joe", 500, 2], ["megan", 500, 3], ["sam", 500, 4], ["billy", 500, 6], ["mack", 500, 7]]
 
 table = Table.new(list_of_players, 123)
-table.print_players_info(table.players)
+# table.print_players_info(table.players)
 table.add_player(Player.new("travis", 500, 5))
-table.print_players_info(table.players)
+# table.print_players_info(table.players)
 table.remove_player_by_name("bob")
-table.print_players_info((table.players))
+# table.print_players_info((table.players))
 table.deal_pockets
 table.print_players_info((table.players))
 
@@ -144,5 +170,7 @@ table.players.each do |player|
   puts
 end
 
+
+puts "Get Winner ***********************************"
 table.get_winner
 table.print_players_info(table.winners)
