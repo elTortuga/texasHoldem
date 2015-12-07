@@ -74,15 +74,10 @@ class Table
     @players.each do | player | #remove folded players from
       winners.push(player) if player.folded == false
     end
-    print_players_info(winners)
     winners = winners.sort_by {|winner| [winner.hand.ranking]}.reverse
-    print_players_info(winners)
-    # puts winners
-    # puts winners[0].hand
-
+    
     index = 0
     while index < winners.count - 1
-      # puts winners[index].hand
       if winners[index].hand.ranking > winners[index+1].hand.ranking
         winners.delete(winners[index+1])
       elsif winners[index].hand.ranking < winners[index+1].hand.ranking
