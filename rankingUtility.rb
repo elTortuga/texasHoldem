@@ -56,8 +56,8 @@ class RankingUtility
       cards, ranking, first_high_card, high_card = get_pair(cards)
       return Hand.new(cards, ranking, first_high_card, high_card, 0)
     end
-    cards, ranking, high_card = get_high_card(cards)
-    return Hand.new(cards, ranking, first_high_card, high_card, 0)
+    cards, ranking, first_high_card, second_high_card, third_high_card = get_high_card(cards)
+    return Hand.new(cards, ranking, first_high_card, second_high_card, third_high_card)
   end
 
 ############################## hands analyzers #################################
@@ -114,8 +114,10 @@ class RankingUtility
     if get_three_of_a_kind(cards) == nil
       return nil
     end
-    returned_three_of_a_kind, delete, three_of_a_kind_high_card, delete = get_three_of_a_kind(cards)
+    returned_three_of_a_kind, delete, delete, delete = get_three_of_a_kind(cards)
     three_of_a_kind = returned_three_of_a_kind[0..2]
+    three_of_a_kind_high_card = three_of_a_kind.at(0)
+    cards = remove_cards_from_collection(three_of_a_kind, cards)
 
     if get_pair(cards) == nil
       return nil
@@ -245,9 +247,9 @@ class RankingUtility
   end
 
   def get_high_card(cards)
-    high_card = order_cards_by_face(cards).at(0)
+    cards = order_cards_by_face(cards)
     cards = cards[0..-3]
-    return cards, HAND_NAMES['HIGH_CARD'], high_card
+    return cards, HAND_NAMES['HIGH_CARD'], cards.at(0), cards.at(1), cards.at(2)
   end
 
 ########################## Helpers #####################################
@@ -492,6 +494,21 @@ cards = []
 # rankingUtility.print_cards(cards)
 # puts ''
 
+# cards.clear
+# cards.push(Card.new("Js"))
+# cards.push(Card.new("Jc"))
+# cards.push(Card.new("6d"))
+# cards.push(Card.new("Qc"))
+# cards.push(Card.new("8d"))
+# cards.push(Card.new("Jh"))
+# cards.push(Card.new("3d"))
+# rankingUtility.print_cards(cards)
+# print (rankingUtility.get_full_house(cards))
+# cards, delete, delete, delete = rankingUtility.get_full_house(cards)
+# puts ''
+# rankingUtility.print_cards(cards)
+# puts ''
+
 ######################### Get Flush ############################# checked
 
 # cards.clear
@@ -589,6 +606,7 @@ cards = []
 # cards.push(Card.new("9h"))
 # cards.push(Card.new("8h"))
 # rankingUtility.print_cards(cards)
+
 # print (rankingUtility.get_high_card(cards))
 # puts ''
 
@@ -602,7 +620,28 @@ cards = []
 # cards.push(Card.new("8h"))
 # rankingUtility.print_cards(cards)
 # print (rankingUtility.get_high_card(cards))
-# puts ''
+# # hand = rankingUtility.get_high_card(cards)
+# cards, ranking, high_card = rankingUtility.get_high_card(cards)
+# puts
+# (Hand.new(cards, ranking, high_card, 0, 0)).to_s
+# puts
+
+# cards.clear
+# cards.push(Card.new("9s"))
+# cards.push(Card.new("Ad"))
+# cards.push(Card.new("Kc"))
+# cards.push(Card.new("Ac"))
+# cards.push(Card.new("Qc"))
+# cards.push(Card.new("8s"))
+# cards.push(Card.new("9d"))
+# rankingUtility.print_cards(cards)
+# print (rankingUtility.get_high_card(cards))
+# # hand = rankingUtility.get_high_card(cards)
+# cards, ranking, high_card = rankingUtility.get_high_card(cards)
+# puts
+# (Hand.new(cards, ranking, high_card, 0, 0)).to_s
+# puts
+
 
 ######################### Straight ############################# checked
 
@@ -737,17 +776,48 @@ cards = []
 
 ######################### Get Hand ############################# checked
 
-cards.clear
-cards.push(Card.new("Ad"))
-cards.push(Card.new("Kh"))
-cards.push(Card.new("Qc"))
-cards.push(Card.new("Js"))
-cards.push(Card.new("9h"))
-cards.push(Card.new("4h"))
-cards.push(Card.new("2h"))
-rankingUtility.print_cards(cards)
-hand = rankingUtility.get_hand(cards)
-print hand
-puts
-puts
+# cards.clear
+# cards.push(Card.new("Ad"))
+# cards.push(Card.new("Kh"))
+# cards.push(Card.new("Qc"))
+# cards.push(Card.new("Js"))
+# cards.push(Card.new("9h"))
+# cards.push(Card.new("4h"))
+# cards.push(Card.new("2h"))
+# rankingUtility.print_cards(cards)
+# hand = rankingUtility.get_hand(cards)
+# print hand
+# puts
+
+# cards.clear
+# cards.push(Card.new("Ad"))
+# cards.push(Card.new("Kh"))
+# cards.push(Card.new("Qc"))
+# cards.push(Card.new("Js"))
+# cards.push(Card.new("0h"))
+# cards.push(Card.new("4h"))
+# cards.push(Card.new("2h"))
+# rankingUtility.print_cards(cards)
+# hand = rankingUtility.get_hand(cards)
+# print hand
+# puts
+
+
+
+######################### Get Merged Cards ############################# checked
+
+# cards.clear
+# cards.push(Card.new("Ad"))
+# cards.push(Card.new("Kh"))
+# cards.push(Card.new("Qc"))
+# cards.push(Card.new("Js"))
+# cards.push(Card.new("9h"))
+# cards.push(Card.new("4h"))
+# cards.push(Card.new("2h"))
+# rankingUtility.print_cards(cards)
+# cards = rankingUtility.get_merged_cards(cards, cards)
+# print cards
+# rankingUtility.print_cards(cards)
+# puts
+
 
